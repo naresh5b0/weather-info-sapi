@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:munit="http://www.mulesoft.org/schema/mule/munit" xmlns:munit-tools="http://www.mulesoft.org/schema/mule/munit-tools"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xsi:schemaLocation="
+		http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+		http://www.mulesoft.org/schema/mule/munit http://www.mulesoft.org/schema/mule/munit/current/mule-munit.xsd
+		http://www.mulesoft.org/schema/mule/munit-tools  http://www.mulesoft.org/schema/mule/munit-tools/current/mule-munit-tools.xsd">
+	<munit:config name="weather-info-sapi-suite.xml" />
+	<munit:test name="get:\weatherInfo:weather-info-sapi-config-test" doc:id="58fdb113-ba4f-4f93-a28d-5a0a605d25dc" >
+		<munit:behavior >
+			<munit:set-event doc:name="Set Input" doc:id="612f7b1d-486e-4471-8a7c-541471e5cf05" >
+				<munit:payload value="#[readUrl('classpath://getweatherInfoweatherinfosapiconfigtest\set-event_payload.dwl')]" encoding="UTF-8" />
+				<munit:attributes value="#[readUrl('classpath://getweatherInfoweatherinfosapiconfigtest\set-event_attributes.dwl')]" />
+				<munit:variables >
+					<munit:variable key="outboundHeaders" value="#[readUrl('classpath://getweatherInfoweatherinfosapiconfigtest\set-event_variable_.dwl')]" />
+				</munit:variables>
+			</munit:set-event>
+			<munit-tools:mock-when doc:name="Mock Open Weather API Request" doc:id="2866cee8-8767-4767-8e81-84cb89a644e9" processor="http:request">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="GET" attributeName="method" />
+					<munit-tools:with-attribute whereValue="Open Weather API Request" attributeName="doc:name" />
+					<munit-tools:with-attribute whereValue="c65e41a0-584a-4cd9-8f2e-6273b435397d" attributeName="doc:id" />
+					<munit-tools:with-attribute whereValue="HTTP_Open_Weather_Request_configuration" attributeName="config-ref" />
+					<munit-tools:with-attribute whereValue="${secure::openweather.path}" attributeName="path" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:payload value="#[MunitTools::getResourceAsString('getweatherInfoweatherinfosapiconfigtest/open-weather-api-resposne.json')]" mediaType="application/json" encoding="UTF-8" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<flow-ref doc:name="Flow-ref to get:\weatherInfo:weather-info-sapi-config" doc:id="a01fc70f-68d0-4a4a-8edd-d4b24a897e6e" name="get:\weatherInfo:weather-info-sapi-config"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert doc:name="Assert payload" doc:id="4e67574e-1692-4a85-bb8e-048a217da47e" message="The payload does not match">
+				<munit-tools:that ><![CDATA[#[%dw 2.0
+import getweatherInfoweatherinfosapiconfigtest::assert_expression_payload
+---
+assert_expression_payload::main({payload: payload, attributes: attributes, vars: vars})]]]></munit-tools:that>
+			</munit-tools:assert>
+		</munit:validation>
+	</munit:test>
+
+
+</mule>

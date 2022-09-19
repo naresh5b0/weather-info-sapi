@@ -1,0 +1,13 @@
+https:
+  port: "8082"
+
+api:
+  auto-discovery-id: "18154439"
+  name: "weather-info-sapi"
+  version: "v1"
+  path: "/api/sys/v1/*"
+
+openweather:
+  host: "api.openweathermap.org"
+  path: "data/3.0/onecall"
+  appid: "![EFiTh+S9Vp77lcZmpjCsjWmO3e3L4jYVgB5QQMCUhDqoWk2+zlW89A==]"    

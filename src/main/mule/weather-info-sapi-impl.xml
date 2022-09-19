@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<flow name="weather-info-sapi-implFlow" doc:id="3e441574-62fa-41a9-9e51-67b45e5d6c4d" >
+		<http:request method="GET" doc:name="Open Weather API Request" doc:id="c65e41a0-584a-4cd9-8f2e-6273b435397d" config-ref="HTTP_Open_Weather_Request_configuration" path="${secure::openweather.path}">
+			<http:query-params ><![CDATA[#[%dw 2.0
+output application/json
+var forecast = attributes.queryParams.forecast   splitBy ","
+---
+{
+	"lat": attributes.queryParams.lat, 
+	"lon":attributes.queryParams.long,
+	"exclude": (["minutely","hourly","daily","current","alerts"] -- forecast) joinBy ",", 
+	"appid":Mule::p('secure::openweather.appid')
+}]]]></http:query-params>
+		</http:request>
+		<ee:transform doc:name="Transform Message" doc:id="efe62306-aeb0-4462-860d-61ce8c3037b0">
+			<ee:message>
+				<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+</mule>
